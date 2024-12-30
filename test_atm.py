@@ -1,3 +1,5 @@
+from atm import Account, Card, ATMController
+
 class TestATMController(unittest.TestCase):
     def setUp(self):
         self.atm = ATMController()
@@ -11,3 +13,10 @@ class TestATMController(unittest.TestCase):
         self.atm.insert_card(self.card)
         self.assertTrue(self.atm.validate_pin("1234"))
         self.assertFalse(self.atm.validate_pin("wrong"))
+
+def test_account_operations(self):
+    account = Account("1", 1000)
+    self.assertEqual(account.get_balance(), 1000)
+    self.assertTrue(account.withdraw(500))
+    self.assertEqual(account.get_balance(), 500)
+    self.assertFalse(account.withdraw(1000))    

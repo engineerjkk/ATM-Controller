@@ -1,10 +1,25 @@
+class Account:
+    def __init__(self, account_number: str, balance: int):
+        self.account_number = account_number
+        self.balance = balance
+
+    def get_balance(self) -> int:
+        return self.balance
+
+    def withdraw(self, amount: int) -> bool:
+        if amount > self.balance:
+            return False
+        self.balance -= amount
+        return True
+
 class Card:
-    def __init__(self, card_number: str, pin: str):
+    def __init__(self, card_number: str, pin: str, accounts: list):  # accounts 매개변수 추가
         self.card_number = card_number
         self.pin = pin
+        self.accounts = accounts
 
-    def validate_pin(self, input_pin: str) -> bool:
-        return self.pin == input_pin
+    def get_accounts(self) -> list:  # 새로운 메서드
+        return self.accounts
 
 class ATMController:
     def __init__(self):
