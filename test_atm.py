@@ -56,12 +56,12 @@ class TestATMController(unittest.TestCase):
         self.atm.validate_pin("1234")
         self.atm.select_account(self.card.get_accounts()[0])
         
-        # 출금한도 테스트
-        self.assertFalse(self.atm.withdraw(1500))  # 한도 초과
+        # Test withdrawal limit
+        self.assertFalse(self.atm.withdraw(1500))  # Exceeds limit
         
-        # 입금한도 테스트
-        self.atm.deposit(3000)  # 정상 입금
-        self.assertFalse(self.atm.deposit(6000))  # 한도 초과
+        # Test deposit limit
+        self.atm.deposit(3000)  # Normal deposit
+        self.assertFalse(self.atm.deposit(6000))  # Exceeds limit
 
     def test_transaction_history(self):
         self.atm.insert_card(self.card)
@@ -69,17 +69,17 @@ class TestATMController(unittest.TestCase):
         account = self.card.get_accounts()[0]
         self.atm.select_account(account)
         
-        # 거래 실행
+        # Execute transactions
         self.atm.withdraw(300)
         self.atm.deposit(500)
         
-        # 거래 내역 확인
+        # Check transaction history
         history = account.get_transaction_history()
         self.assertEqual(len(history), 2)
         
-        # 최근 거래 확인
+        # Verify latest transaction
         latest = history[-1]
-        self.assertEqual(latest.type, "입금")
+        self.assertEqual(latest.type, "deposit")
         self.assertEqual(latest.amount, 500)
         self.assertEqual(latest.balance, 1200)
 
@@ -88,7 +88,7 @@ class TestATMController(unittest.TestCase):
         self.atm.validate_pin("1234")
         self.atm.select_account(self.card.get_accounts()[0])
         
-        # 세션 타임아웃 시뮬레이션
+        # Simulate session timeout
         self.atm.last_activity = datetime.now() - timedelta(seconds=31)
         
         with self.assertRaises(Exception):
@@ -99,9 +99,9 @@ class TestATMController(unittest.TestCase):
 
     def test_invalid_pin_format(self):
         self.atm.insert_card(self.card)
-        self.assertFalse(self.atm.validate_pin("12"))  # 짧은 PIN의 경우
-        self.assertFalse(self.atm.validate_pin("12345"))  # 긴 PIN의 경우
-        self.assertFalse(self.atm.validate_pin("abcd"))  # 문자 포함의 경우 
+        self.assertFalse(self.atm.validate_pin("12"))  # Too short
+        self.assertFalse(self.atm.validate_pin("12345"))  # Too long
+        self.assertFalse(self.atm.validate_pin("abcd"))  # Contains letters
 
 if __name__ == '__main__':
     unittest.main()

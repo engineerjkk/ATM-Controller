@@ -37,21 +37,21 @@ class Account:
 
    def withdraw(self, amount: int) -> bool:
        if amount > self.MAX_WITHDRAWAL:
-           print(f"1회 최대 출금한도({self.MAX_WITHDRAWAL}달러)를 초과했습니다.")
+           print(f"Withdrawal amount exceeds the maximum limit (${self.MAX_WITHDRAWAL})")
            return False
        if amount > self.balance:
-           print("잔액이 부족합니다.")
+           print("Insufficient balance")
            return False
        self.balance -= amount
-       self.add_transaction("출금", amount)
+       self.add_transaction("withdrawal", amount)
        return True
 
    def deposit(self, amount: int) -> bool:
        if amount > self.MAX_DEPOSIT:
-           print(f"1회 최대 입금한도({self.MAX_DEPOSIT}달러)를 초과했습니다.")
+           print(f"Deposit amount exceeds the maximum limit (${self.MAX_DEPOSIT})")
            return False
        self.balance += amount
-       self.add_transaction("입금", amount)
+       self.add_transaction("deposit", amount)
        return True
 
    def get_transaction_history(self):
@@ -70,23 +70,23 @@ class ATMController:
 
     def insert_card(self, card: Card) -> bool:
         if card:
-            print(f"카드가 삽입되었습니다. 카드번호: {card.card_number}")
+            print(f"Card inserted. Card number: {card.card_number}")
             self.inserted_card = card
             self.is_authenticated = False
             return True
-        print("카드 삽입 실패")
+        print("Card insertion failed")
         return False
 
     def validate_pin(self, pin: str) -> bool:
         if not pin.isdigit() or len(pin) != 4:
-            print("PIN은 4자리 숫자여야 합니다.")
+            print("PIN must be a 4-digit number")
             return False
             
         if self.inserted_card and self.inserted_card.validate_pin(pin):
-            print("PIN 인증 성공")
+            print("PIN validation successful")
             self.is_authenticated = True
             return True
-        print("잘못된 PIN입니다.")
+        print("Invalid PIN")
         return False
 
     def get_accounts(self) -> list:
@@ -102,32 +102,32 @@ class ATMController:
 
     def check_balance(self) -> int:
         if self.check_timeout():
-            raise Exception("세션이 만료되었습니다")
+            raise Exception("Session expired")
             
         if self.selected_account:
             self.update_activity()
             return self.selected_account.get_balance()
-        raise Exception("계좌가 선택되지 않았습니다")
+        raise Exception("No account selected")
 
     def withdraw(self, amount: int) -> bool:
         if self.check_timeout():
             return False
             
         if not isinstance(amount, int) or amount <= 0:
-            print("올바른 금액을 입력하세요")
+            print("Please enter a valid amount")
             return False
                 
         if self.selected_account:
             result = self.selected_account.withdraw(amount)
-            print(f"출금 {'성공' if result else '실패'}: {amount}달러")
+            print(f"Withdrawal {'successful' if result else 'failed'}: ${amount}")
             self.update_activity()
             return result
-        print("계좌가 선택되지 않았습니다")
+        print("No account selected")
         return False
 
     def deposit(self, amount: int) -> bool:
         if not isinstance(amount, int) or amount <= 0:
-            print("올바른 금액을 입력하세요")
+            print("Please enter a valid amount")
             return False
             
         if self.check_timeout():
@@ -135,10 +135,10 @@ class ATMController:
             
         if self.selected_account:
             result = self.selected_account.deposit(amount)
-            print(f"입금 {'성공' if result else '실패'}: {amount}달러")
+            print(f"Deposit {'successful' if result else 'failed'}: ${amount}")
             self.update_activity()
             return result
-        print("계좌가 선택되지 않았습니다")
+        print("No account selected")
         return False
 
     def eject_card(self):
@@ -156,9 +156,9 @@ class ATMController:
         if not self.last_activity:
             return False
         if datetime.now() - self.last_activity > timedelta(seconds=self.SESSION_TIMEOUT):
-            print("세션이 만료되었습니다. 카드를 다시 삽입해주세요.")
+            print("Session expired. Please insert your card again.")
             self.reset_session()
-            raise Exception("세션이 만료되었습니다")
+            raise Exception("Session expired")
         return False
 
     def update_activity(self):
@@ -166,18 +166,18 @@ class ATMController:
 
 
 if __name__ == "__main__":
-   # 테스트용 데이터 생성
+   # Create test data
    account = Account("12345", 1000)
    card = Card("9876", "1234", [account])
    atm = ATMController()
    
-   # 실행 예시
+   # Example usage
    atm.insert_card(card)
-   atm.validate_pin(input("PIN을 입력하세요: "))
+   atm.validate_pin(input("Enter PIN: "))
    atm.select_account(account)
-   print(f"현재 잔액: {atm.check_balance()}")
+   print(f"Current balance: ${atm.check_balance()}")
    
-   # 출금 테스트
-   amount = int(input("출금할 금액을 입력하세요: "))
+   # Test withdrawal
+   amount = int(input("Enter amount to withdraw: "))
    atm.withdraw(amount)
-   print(f"출금 후 잔액: {atm.check_balance()}")
+   print(f"Balance after withdrawal: ${atm.check_balance()}")
