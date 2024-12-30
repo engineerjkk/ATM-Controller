@@ -61,5 +61,25 @@ class TestATMController(unittest.TestCase):
         self.atm.deposit(3000)  # 정상 입금
         self.assertFalse(self.atm.deposit(6000))  # 한도 초과
 
+    def test_transaction_history(self):
+        self.atm.insert_card(self.card)
+        self.atm.validate_pin("1234")
+        account = self.card.get_accounts()[0]
+        self.atm.select_account(account)
+        
+        # 거래 실행
+        self.atm.withdraw(300)
+        self.atm.deposit(500)
+        
+        # 거래 내역 확인
+        history = account.get_transaction_history()
+        self.assertEqual(len(history), 2)
+        
+        # 최근 거래 확인
+        latest = history[-1]
+        self.assertEqual(latest.type, "입금")
+        self.assertEqual(latest.amount, 500)
+        self.assertEqual(latest.balance, 1200)
+
 if __name__ == '__main__':
     unittest.main()

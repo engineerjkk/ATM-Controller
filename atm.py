@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class Card:
     def __init__(self, card_number: str, pin: str, accounts: list):
         self.card_number = card_number
@@ -10,33 +12,50 @@ class Card:
     def get_accounts(self) -> list:
         return self.accounts
 
-
-class Account:
-    MAX_WITHDRAWAL = 1000  # 1회 최대 출금한도
-    MAX_DEPOSIT = 5000     # 1회 최대 입금한도
-    def __init__(self, account_number: str, balance: int):
-        self.account_number = account_number
+class Transaction:
+    def __init__(self, transaction_type: str, amount: int, balance: int):
+        self.timestamp = datetime.now()
+        self.type = transaction_type
+        self.amount = amount
         self.balance = balance
 
-    def get_balance(self) -> int:
-        return self.balance
+class Account:
+   MAX_WITHDRAWAL = 1000
+   MAX_DEPOSIT = 5000
 
-    def withdraw(self, amount: int) -> bool:
-        if amount > self.MAX_WITHDRAWAL:
-            print(f"1회 최대 출금한도({self.MAX_WITHDRAWAL}달러)를 초과했습니다.")
-            return False
-        if amount > self.balance:
-            print("잔액이 부족합니다.")
-            return False
-        self.balance -= amount
-        return True
+   def __init__(self, account_number: str, balance: int):
+       self.account_number = account_number
+       self.balance = balance
+       self.transactions = []
 
-    def deposit(self, amount: int) -> bool:
-        if amount > self.MAX_DEPOSIT:
-            print(f"1회 최대 입금한도({self.MAX_DEPOSIT}달러)를 초과했습니다.")
-            return False
-        self.balance += amount
-        return True
+   def get_balance(self) -> int:
+       return self.balance
+
+   def add_transaction(self, type: str, amount: int):
+       transaction = Transaction(type, amount, self.balance)
+       self.transactions.append(transaction)
+
+   def withdraw(self, amount: int) -> bool:
+       if amount > self.MAX_WITHDRAWAL:
+           print(f"1회 최대 출금한도({self.MAX_WITHDRAWAL}달러)를 초과했습니다.")
+           return False
+       if amount > self.balance:
+           print("잔액이 부족합니다.")
+           return False
+       self.balance -= amount
+       self.add_transaction("출금", amount)
+       return True
+
+   def deposit(self, amount: int) -> bool:
+       if amount > self.MAX_DEPOSIT:
+           print(f"1회 최대 입금한도({self.MAX_DEPOSIT}달러)를 초과했습니다.")
+           return False
+       self.balance += amount
+       self.add_transaction("입금", amount)
+       return True
+
+   def get_transaction_history(self):
+       return self.transactions
 
 
 class ATMController:
