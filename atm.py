@@ -101,27 +101,45 @@ class ATMController:
         return False
 
     def check_balance(self) -> int:
+        if self.check_timeout():
+            raise Exception("세션이 만료되었습니다")
+            
         if self.selected_account:
+            self.update_activity()
             return self.selected_account.get_balance()
         raise Exception("계좌가 선택되지 않았습니다")
 
     def withdraw(self, amount: int) -> bool:
+        if self.check_timeout():
+            return False
+            
         if not isinstance(amount, int) or amount <= 0:
             print("올바른 금액을 입력하세요")
             return False
-            
+                
         if self.selected_account:
             result = self.selected_account.withdraw(amount)
             print(f"출금 {'성공' if result else '실패'}: {amount}달러")
+            self.update_activity()
             return result
         print("계좌가 선택되지 않았습니다")
         return False
 
-    def deposit(self, amount: int):
+    def deposit(self, amount: int) -> bool:
+        if not isinstance(amount, int) or amount <= 0:
+            print("올바른 금액을 입력하세요")
+            return False
+            
+        if self.check_timeout():
+            return False
+            
         if self.selected_account:
-            self.selected_account.deposit(amount)
-            return
-        raise Exception("계좌가 선택되지 않았습니다")
+            result = self.selected_account.deposit(amount)
+            print(f"입금 {'성공' if result else '실패'}: {amount}달러")
+            self.update_activity()
+            return result
+        print("계좌가 선택되지 않았습니다")
+        return False
 
     def eject_card(self):
         self.inserted_card = None
@@ -140,7 +158,7 @@ class ATMController:
         if datetime.now() - self.last_activity > timedelta(seconds=self.SESSION_TIMEOUT):
             print("세션이 만료되었습니다. 카드를 다시 삽입해주세요.")
             self.reset_session()
-            return True
+            raise Exception("세션이 만료되었습니다")
         return False
 
     def update_activity(self):
