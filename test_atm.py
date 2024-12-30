@@ -49,5 +49,17 @@ class TestATMController(unittest.TestCase):
         with self.assertRaises(Exception):
             self.atm.check_balance()
 
+    def test_transaction_limits(self):
+        self.atm.insert_card(self.card)
+        self.atm.validate_pin("1234")
+        self.atm.select_account(self.card.get_accounts()[0])
+        
+        # 출금한도 테스트
+        self.assertFalse(self.atm.withdraw(1500))  # 한도 초과
+        
+        # 입금한도 테스트
+        self.atm.deposit(3000)  # 정상 입금
+        self.assertFalse(self.atm.deposit(6000))  # 한도 초과
+
 if __name__ == '__main__':
     unittest.main()
