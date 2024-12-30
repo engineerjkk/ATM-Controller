@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class Card:
     def __init__(self, card_number: str, pin: str, accounts: list):
@@ -59,10 +59,14 @@ class Account:
 
 
 class ATMController:
+    SESSION_TIMEOUT = 30
+
     def __init__(self):
         self.inserted_card = None
         self.is_authenticated = False
         self.selected_account = None
+        self.last_activity = None
+        self.reset_session()
 
     def insert_card(self, card: Card) -> bool:
         if card:
@@ -123,6 +127,24 @@ class ATMController:
         self.inserted_card = None
         self.selected_account = None
         self.is_authenticated = False
+
+    def reset_session(self):
+        self.inserted_card = None
+        self.is_authenticated = False
+        self.selected_account = None
+        self.last_activity = None
+
+    def check_timeout(self) -> bool:
+        if not self.last_activity:
+            return False
+        if datetime.now() - self.last_activity > timedelta(seconds=self.SESSION_TIMEOUT):
+            print("세션이 만료되었습니다. 카드를 다시 삽입해주세요.")
+            self.reset_session()
+            return True
+        return False
+
+    def update_activity(self):
+        self.last_activity = datetime.now()
 
 
 if __name__ == "__main__":
