@@ -11,6 +11,9 @@ class Account:
             return False
         self.balance -= amount
         return True
+    
+    def deposit(self, amount: int):  # 추가
+        self.balance += amount
 
 class Card:
     def __init__(self, card_number: str, pin: str, accounts: list):  # accounts 매개변수 추가
@@ -41,4 +44,15 @@ class ATMController:
     def check_balance(self) -> int:
         if self.selected_account:
             return self.selected_account.get_balance()
+        raise Exception("계좌가 선택되지 않았습니다")
+
+    def withdraw(self, amount: int) -> bool:
+        if self.selected_account:
+            return self.selected_account.withdraw(amount)
+        raise Exception("계좌가 선택되지 않았습니다")
+
+    def deposit(self, amount: int):
+        if self.selected_account:
+            self.selected_account.deposit(amount)
+            return
         raise Exception("계좌가 선택되지 않았습니다")
