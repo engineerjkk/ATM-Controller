@@ -24,17 +24,21 @@ class Card:
 class ATMController:
     def __init__(self):
         self.inserted_card = None
-        self.is_authenticated = False  # 추가
+        self.is_authenticated = False
+        self.selected_account = None  # 추가
 
-    def insert_card(self, card: Card) -> bool:
-        if card:
-            self.inserted_card = card
-            self.is_authenticated = False  # 카드 삽입시 인증 상태 초기화
+    def get_accounts(self) -> list:
+        if self.is_authenticated and self.inserted_card:
+            return self.inserted_card.get_accounts()
+        return []
+
+    def select_account(self, account: Account) -> bool:
+        if self.is_authenticated and account in self.get_accounts():
+            self.selected_account = account
             return True
         return False
 
-    def validate_pin(self, pin: str) -> bool:  # 새로운 메서드
-        if self.inserted_card and self.inserted_card.validate_pin(pin):
-            self.is_authenticated = True
-            return True
-        return False
+    def check_balance(self) -> int:
+        if self.selected_account:
+            return self.selected_account.get_balance()
+        raise Exception("계좌가 선택되지 않았습니다")
