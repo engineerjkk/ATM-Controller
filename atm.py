@@ -180,4 +180,5 @@ if __name__ == "__main__":
    # Test withdrawal
    amount = int(input("Enter amount to withdraw: "))
    atm.withdraw(amount)
-   print(f"Balance after withdrawal: ${atm.check_balance()}")
+   print(f"Balance after withdrawal: ${atm.check_balance()}") 
+   

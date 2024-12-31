@@ -99,9 +99,9 @@ class TestATMController(unittest.TestCase):
 
     def test_invalid_pin_format(self):
         self.atm.insert_card(self.card)
-        self.assertFalse(self.atm.validate_pin("12"))  # Too short
-        self.assertFalse(self.atm.validate_pin("12345"))  # Too long
-        self.assertFalse(self.atm.validate_pin("abcd"))  # Contains letters
+        self.assertFalse(self.atm.validate_pin("12"))  # Too short!
+        self.assertFalse(self.atm.validate_pin("12345"))  # Too long!
+        self.assertFalse(self.atm.validate_pin("abcd"))  # Contains letters!
 
 if __name__ == '__main__':
     unittest.main()
