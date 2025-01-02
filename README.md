@@ -30,7 +30,7 @@ A simple ATM controller implementation focusing on basic ATM operations without 
 1. Clone the repository:
 ```bash
 git clone https://github.com/engineerjkk/ATM-Controller.git
-cd atm-controller
+cd /ATM-Controller
 ```
 
 2. No additional dependencies required as the project uses Python standard library.
